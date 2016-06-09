@@ -8,15 +8,19 @@
 
 #import "FISAppDelegate.h"
 
+#import "FISCaesarCipher.h"
+
 @implementation FISAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor blackColor];
     [self.window setRootViewController:[[UIViewController alloc] init]];
     [self.window makeKeyAndVisible];
+    
+    FISCaesarCipher *cipher = [FISCaesarCipher new];
+    NSLog(@"Decode: %@", [cipher decodeMessage:@"c" withOffset:3]);
     
     return YES;
 }
