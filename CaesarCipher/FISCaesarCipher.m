@@ -8,8 +8,13 @@
 
 #import "FISCaesarCipher.h"
 
-#define MAX_KEY    26
-#define SPACE_CHAR 32
+#define ASCII_TOTAL 26
+
+#define LOWERCASE_MIN 97
+#define LOWERCASE_MAX 123
+
+#define UPPERCASE_MIN 65
+#define UPPERCASE_MAX 91
 
 @implementation FISCaesarCipher
 
@@ -30,13 +35,13 @@
     for (NSUInteger i = 0; i < [message length]; i++) {
         unichar character = [message characterAtIndex:i];
         
-        if (key % 26 == 0) {
+        if (key % ASCII_TOTAL == 0) {
             [mutableEncodedString appendString:[NSString stringWithFormat:@"%c", character]];
             break;
         }
         
-        if (key > 26) {
-            key %= 26;
+        if (key > ASCII_TOTAL) {
+            key %= ASCII_TOTAL;
         }
         
         if (character == 'z') {
@@ -48,7 +53,7 @@
                 character += key;
                 
                 if (character > 122) {
-                    character -= 26;
+                    character -= ASCII_TOTAL;
                 }
             }
         }
@@ -67,25 +72,32 @@
     for (NSUInteger i = 0; i < [encodedMessage length]; i++) {
         unichar character = [encodedMessage characterAtIndex:i];
         
-        if (key % 26 == 0) {
+        if (key % ASCII_TOTAL == 0) {
             [mutableDecodedString appendString:[NSString stringWithFormat:@"%c", character]];
             break;
         }
         
-        if (key > 26) {
-            key %= 26;
+        if (key > ASCII_TOTAL) {
+            key %= ASCII_TOTAL;
         }
         
         if (![self isPunctuation:character]) {
-            character -= key;
+            NSString *characterString = [NSString stringWithFormat:@"%c", character];
+            unichar charKeyDiff = character - key;
             
-            // I'm sorry I just needed to
-            // see this damn test finally succeed
-            if (character < 97) {
-                if (character == '`') {
-                    character = 'z';
-                } else if (character == '@') {
-                    character = 'Z';
+            if ([characterString isEqualToString:characterString.uppercaseString]) {
+                if (charKeyDiff >= UPPERCASE_MIN) {
+                    character -= key;
+                } else {
+                    int difference = (character - UPPERCASE_MIN);
+                    character = UPPERCASE_MAX - (key - difference);
+                }
+            } else {
+                if (charKeyDiff >= LOWERCASE_MIN) {
+                    character -= key;
+                } else {
+                    int difference = (character - LOWERCASE_MIN);
+                    character = LOWERCASE_MAX - (key - difference);
                 }
             }
         }
